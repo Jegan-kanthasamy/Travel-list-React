@@ -17,11 +17,22 @@ export default function App() {
     setAddItem((removeItem) => removeItem.filter((item) => item.id !== id));
   }
 
+  function handleToggleOnClick(id) {
+    setAddItem((items) =>
+      items.map((item) =>
+        item.id === id ? { ...item, packed: !item.packed } : item
+      )
+    );
+  }
   return (
     <div className="app">
       <Logo />
       <Form newItem={addNewItem} />
-      <PackingList addItem={addItem} onDeleteItem={deleteItem} />
+      <PackingList
+        addItem={addItem}
+        onDeleteItem={deleteItem}
+        onToggle={handleToggleOnClick}
+      />
       <Stats />
     </div>
   );
@@ -73,7 +84,7 @@ function Form({ newItem }) {
         value={quantity} // Setting the default to state
         onChange={(e) => setQuantity(Number(e.target.value))} // setting state to get value from input to react while  change
       >
-        {/* Array.form() is used to create an array of 20 nums and it is stored in option element */}
+        {/* Array.form() is used to create an array of 20 num and it is stored in option element */}
 
         {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
           <option type={num} key={num}>
@@ -98,12 +109,17 @@ function Form({ newItem }) {
 
 // PackingList (it shows the items quantity , checkbox and remove item icon )
 
-function PackingList({ addItem, onDeleteItem }) {
+function PackingList({ addItem, onDeleteItem, onToggle }) {
   return (
     <div className="list">
       <ul>
         {addItem.map((items) => (
-          <Item item={items} onDeleteItem={onDeleteItem} key={items.id} />
+          <Item
+            item={items}
+            onDeleteItem={onDeleteItem}
+            onToggle={onToggle}
+            key={items.id}
+          />
         ))}
       </ul>
     </div>
@@ -112,12 +128,18 @@ function PackingList({ addItem, onDeleteItem }) {
 
 // item function (it  is used to be as child comp. of PackingList function to create elements)
 
-function Item({ item, onDeleteItem }) {
+function Item({ item, onDeleteItem, onToggle }) {
   return (
     <li>
+      <input
+        type="checkbox"
+        value={item.packed}
+        onChange={() => {
+          onToggle(item.id);
+        }}
+      />
       <span style={item.packed ? { textDecoration: "line-through" } : null}>
-        {item.quantity}
-        {item.description}
+        {item.quantity} {item.description}
       </span>
       <button onClick={() => onDeleteItem(item.id)}>❌</button>
     </li>
