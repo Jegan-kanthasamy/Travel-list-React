@@ -14,12 +14,12 @@ export default function App() {
   }
 
   function deleteItem(id) {
-    setAddItem((removeItem) => removeItem.filter((item) => item.id !== id));
+    setAddItem(removeItem => removeItem.filter(item => item.id !== id));
   }
 
   function handleToggleOnClick(id) {
-    setAddItem((items) =>
-      items.map((item) =>
+    setAddItem(items =>
+      items.map(item =>
         item.id === id ? { ...item, packed: !item.packed } : item
       )
     );
@@ -33,7 +33,7 @@ export default function App() {
         onDeleteItem={deleteItem}
         onToggle={handleToggleOnClick}
       />
-      <Stats />
+      <Stats item={addItem} />
     </div>
   );
 }
@@ -82,11 +82,11 @@ function Form({ newItem }) {
 
       <select
         value={quantity} // Setting the default to state
-        onChange={(e) => setQuantity(Number(e.target.value))} // setting state to get value from input to react while  change
+        onChange={e => setQuantity(Number(e.target.value))} // setting state to get value from input to react while  change
       >
         {/* Array.form() is used to create an array of 20 num and it is stored in option element */}
 
-        {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
+        {Array.from({ length: 20 }, (_, i) => i + 1).map(num => (
           <option type={num} key={num}>
             {num}
           </option>
@@ -99,7 +99,7 @@ function Form({ newItem }) {
         type="text"
         placeholder="add list..."
         value={description}
-        onChange={(e) => setDescription(e.target.value)}
+        onChange={e => setDescription(e.target.value)}
       />
 
       <button>Submit</button>
@@ -113,7 +113,7 @@ function PackingList({ addItem, onDeleteItem, onToggle }) {
   return (
     <div className="list">
       <ul>
-        {addItem.map((items) => (
+        {addItem.map(items => (
           <Item
             item={items}
             onDeleteItem={onDeleteItem}
@@ -148,10 +148,26 @@ function Item({ item, onDeleteItem, onToggle }) {
 
 // Stats function ( it will show how many % of items are packed)
 
-function Stats() {
+function Stats({ item }) {
+  if (!item.length) {
+    return (
+      <p className="stats">
+        <em>Get started to pack the item.</em>
+      </p>
+    );
+  }
+
+  const numItem = item.length;
+  const itemPacked = item.filter(items => items.packed === true).length;
+  const percentage = Math.round((itemPacked / numItem) * 100);
+
   return (
     <footer className="stats">
-      <em>You have X item in your list, and you already packed X</em>
+      <em>
+        {itemPacked === numItem
+          ? `You've packed all the item in the list ✈`
+          : `You have ${numItem} item in your list, and you already packed ${itemPacked} (${percentage}%).`}
+      </em>
     </footer>
   );
 }
