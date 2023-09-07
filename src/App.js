@@ -26,7 +26,9 @@ export default function App() {
   }
 
   function handleClearList() {
-    setAddItem([]);
+    let conformation = window.confirm("Do you need to clear the list");
+
+    if (conformation) setAddItem([]);
   }
   return (
     <div className="app">
